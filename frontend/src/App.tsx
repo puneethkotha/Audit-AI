@@ -12,12 +12,19 @@ export default function App() {
   const [rules, setRules] = useState<ComplianceRule[]>([]);
   const [loading, setLoading] = useState(false);
   const [rulesLoading, setRulesLoading] = useState(true);
+  const [backendOk, setBackendOk] = useState<boolean | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     listRules()
-      .then(setRules)
-      .catch(() => setRules([]))
+      .then((r) => {
+        setRules(r);
+        setBackendOk(true);
+      })
+      .catch(() => {
+        setRules([]);
+        setBackendOk(false);
+      })
       .finally(() => setRulesLoading(false));
   }, []);
 
@@ -68,6 +75,12 @@ export default function App() {
               isLoading={loading}
             />
           </section>
+
+          {backendOk === false && !loading && (
+            <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-amber-400">
+              Backend not connected. Run <code className="rounded bg-[var(--bg-elevated)] px-1.5 py-0.5">docker-compose up</code> locally for full audit capability.
+            </div>
+          )}
 
           {error && (
             <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-red-400">
