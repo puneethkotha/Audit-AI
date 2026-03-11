@@ -15,9 +15,6 @@ pydantic-settings==2.6.1
 # HTTP Client (for Claude API)
 httpx==0.28.1
 
-# Redis
-redis==5.2.1
-
 # LLM
 anthropic==0.39.0
 

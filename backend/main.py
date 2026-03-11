@@ -6,7 +6,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from prometheus_client import make_asgi_app
 
-from core.config import settings
 from core.database import init_db, get_db
 from core.metrics import (
     audit_processing_seconds,
@@ -16,40 +15,12 @@ from core.metrics import (
 )
 from routers import audit, rules
 
-# Redis client - initialized in lifespan
-_redis_client = None
-
-
-async def get_redis_client():
-    """Get Redis client. Returns None if Redis is unavailable."""
-    return _redis_client
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Application lifespan: init DB, Redis; cleanup on shutdown."""
+    """Application lifespan: init DB."""
     await init_db()
-
-    redis_client = None
-    try:
-        import redis.asyncio as redis_async
-        redis_client = redis_async.from_url(
-            settings.redis_url,
-            encoding="utf-8",
-            decode_responses=False,
-        )
-        await redis_client.ping()
-    except Exception:
-        pass
-
-    app.state.redis = redis_client
-    global _redis_client
-    _redis_client = redis_client
-
     yield
-
-    if redis_client:
-        await redis_client.close()
 
 
 app = FastAPI(

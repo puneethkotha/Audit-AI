@@ -3,7 +3,6 @@
 import hashlib
 import time
 import uuid
-from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -15,6 +14,7 @@ from models.schemas import (
     ExtractedFields,
     RuleViolation,
 )
+from services.dedup_service import get_dedup_key, set_dedup_key
 from services.extractor import ExtractionError, extract_fields
 from services.rule_engine import run_rules
 
@@ -45,45 +45,16 @@ def _classify_risk_level(score: int) -> RiskLevel:
     return RiskLevel.LOW
 
 
-async def get_dedup_key(redis_client: Any, note_hash: str) -> str | None:
-    """Check Redis for deduplicated audit result. Returns audit_id if found."""
-    if not redis_client:
-        return None
-    key = f"audit:dedup:{note_hash}"
-    audit_id = await redis_client.get(key)
-    return audit_id.decode() if audit_id else None
-
-
-async def set_dedup_key(
-    redis_client: Any,
-    note_hash: str,
-    audit_id: str,
-) -> None:
-    """Store audit_id in Redis for deduplication."""
-    if not redis_client:
-        return
-    key = f"audit:dedup:{note_hash}"
-    await redis_client.setex(
-        key,
-        settings.deduplication_ttl_seconds,
-        audit_id,
-    )
-
-
-async def run_audit(
-    db: AsyncSession,
-    note_text: str,
-    redis_client: Any,
-) -> AuditResultSchema:
+async def run_audit(db: AsyncSession, note_text: str) -> AuditResultSchema:
     """
     Run full audit pipeline: save note, extract fields, run rules, compute score, save result.
-    Uses Redis for request deduplication (60s TTL).
+    Uses in-memory deduplication (60s TTL).
     """
     start = time.perf_counter()
     note_hash = hashlib.sha256(note_text.encode()).hexdigest()
 
     # Check deduplication
-    cached_id = await get_dedup_key(redis_client, note_hash)
+    cached_id = await get_dedup_key(note_hash)
     if cached_id:
         from sqlalchemy import select
 
@@ -130,7 +101,7 @@ async def run_audit(
     await db.flush()
 
     # 6. Set dedup key
-    await set_dedup_key(redis_client, note_hash, str(audit.id))
+    await set_dedup_key(note_hash, str(audit.id))
 
     elapsed = time.perf_counter() - start
     audit_processing_seconds.observe(elapsed)

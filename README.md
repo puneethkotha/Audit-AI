@@ -33,12 +33,7 @@ Deploy the full stack to production in about 15 minutes.
 2. Copy the connection string from the dashboard
 3. If it uses `postgresql://`, the app will auto-convert to `postgresql+asyncpg://`
 
-### 2. Upstash (Redis)
-
-1. Create a database at [upstash.com](https://upstash.com)
-2. Copy the `rediss://` connection URL (TLS is required)
-
-### 3. Render (Backend API)
+### 2. Render (Backend API)
 
 1. Connect your repo at [render.com](https://render.com)
 2. Create a **Web Service** from the repo
@@ -48,16 +43,15 @@ Deploy the full stack to production in about 15 minutes.
    - **Health Check Path**: `/health`
 5. Add environment variables:
    - `DATABASE_URL` – from Neon
-   - `REDIS_URL` – from Upstash
    - `ANTHROPIC_API_KEY` – your Anthropic key
 6. Deploy and note the service URL (e.g. `https://auditai-api.onrender.com`)
 
-### 4. Vercel (Frontend)
+### 3. Vercel (Frontend)
 
 1. Import the repo at [vercel.com](https://vercel.com)
 2. Set **Root Directory** to `frontend`
 3. Add environment variable:
-   - `VITE_API_URL` – your Render backend URL (e.g. `https://auditai-api.onrender.com`)
+   - `VITE_API_URL` – your Render backend URL (e.g. `https://audit-ai-lend.onrender.com`)
 4. Deploy
 
 The frontend will call the Render backend. Rules are seeded automatically on first backend deploy.

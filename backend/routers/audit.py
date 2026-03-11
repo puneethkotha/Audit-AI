@@ -2,7 +2,7 @@
 
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -23,13 +23,11 @@ router = APIRouter(prefix="/audit", tags=["audit"])
 @router.post("", response_model=AuditResultSchema)
 async def create_audit(
     body: AuditRequest,
-    request: Request,
     db: AsyncSession = Depends(get_db),
 ):
     """Run compliance audit on a clinical note."""
-    redis_client = getattr(request.app.state, "redis", None)
     try:
-        return await run_audit(db, body.note_text, redis_client)
+        return await run_audit(db, body.note_text)
     except ExtractionError as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
 

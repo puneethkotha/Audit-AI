@@ -15,9 +15,6 @@ class Settings(BaseSettings):
     # Database
     database_url: str = "postgresql+asyncpg://auditai:auditai@localhost:5432/auditai"
 
-    # Redis
-    redis_url: str = "redis://localhost:6379/0"
-
     # Anthropic
     anthropic_api_key: str = ""
     anthropic_model: str = "claude-sonnet-4-20250514"

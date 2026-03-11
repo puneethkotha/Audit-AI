@@ -1,5 +1,5 @@
 # Render Blueprint - deploy from repo dashboard or via Render CLI
-# Set DATABASE_URL (Neon), REDIS_URL (Upstash), ANTHROPIC_API_KEY as env vars in dashboard
+# Set DATABASE_URL (Neon), ANTHROPIC_API_KEY as env vars in dashboard
 
 services:
   - type: web
