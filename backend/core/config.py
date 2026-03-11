@@ -23,8 +23,11 @@ class Settings(BaseSettings):
             url = url.replace("postgresql://", "postgresql+asyncpg://", 1)
         if url.startswith("postgres://"):
             url = url.replace("postgres://", "postgresql+asyncpg://", 1)
-        if "sslmode=require" in url and "ssl=require" not in url:
-            url = url.replace("sslmode=require", "ssl=require")
+        # Strip params asyncpg doesn't support
+        url = url.replace("sslmode=require", "ssl=require")
+        url = url.replace("&channel_binding=require", "")
+        url = url.replace("channel_binding=require&", "")
+        url = url.replace("channel_binding=require", "")
         return url
 
     # LLM: Anthropic (set key) or mock mode (no key, free)
