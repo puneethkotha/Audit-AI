@@ -25,7 +25,7 @@ docker-compose exec backend python seed_rules.py
 
 ## GitHub Pages
 
-The frontend deploys to GitHub Pages on each push to `main`. Enable it in your repository: Settings > Pages > Source: GitHub Actions. The static site runs at `https://puneethkotha.github.io/Audit-AI/`. For full audit functionality, run the backend locally or deploy it separately and set `VITE_API_URL` when building.
+The frontend deploys automatically on each push to `main`. Go to **Settings > Pages** and set **Source** to **Deploy from a branch**, then choose branch **gh-pages** and folder **/ (root)**. Save. The app will be live at `https://puneethkotha.github.io/Audit-AI/`. For full audit functionality, run the backend locally or deploy it separately and set `VITE_API_URL` when building.
 
 ## Architecture
 
