@@ -15,9 +15,22 @@ class Settings(BaseSettings):
     # Database
     database_url: str = "postgresql+asyncpg://auditai:auditai@localhost:5432/auditai"
 
-    # Anthropic
+    @property
+    def async_database_url(self) -> str:
+        """Database URL with asyncpg driver for SQLAlchemy."""
+        url = self.database_url
+        if url.startswith("postgresql://"):
+            url = url.replace("postgresql://", "postgresql+asyncpg://", 1)
+        if url.startswith("postgres://"):
+            url = url.replace("postgres://", "postgresql+asyncpg://", 1)
+        if "sslmode=require" in url and "ssl=require" not in url:
+            url = url.replace("sslmode=require", "ssl=require")
+        return url
+
+    # LLM: Anthropic (set key) or mock mode (no key, free)
     anthropic_api_key: str = ""
     anthropic_model: str = "claude-sonnet-4-20250514"
+    use_mock_extractor: bool = False
 
     # App
     debug: bool = False

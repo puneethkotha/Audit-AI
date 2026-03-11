@@ -11,22 +11,8 @@ from models.db import AuditResult, ClinicalNote, ComplianceRule  # noqa: F401
 
 from core.config import settings
 
-
-def _ensure_asyncpg_url(url: str) -> str:
-    """Convert postgres:// to postgresql+asyncpg:// and fix SSL for Neon."""
-    if url.startswith("postgres://"):
-        url = url.replace("postgres://", "postgresql+asyncpg://", 1)
-    elif url.startswith("postgresql://") and "+asyncpg" not in url:
-        url = url.replace("postgresql://", "postgresql+asyncpg://", 1)
-    if "sslmode=require" in url and "ssl=require" not in url:
-        url = url.replace("sslmode=require", "ssl=require")
-    return url
-
-
-_db_url = _ensure_asyncpg_url(settings.database_url)
-
 engine = create_async_engine(
-    _db_url,
+    settings.async_database_url,
     echo=settings.debug,
 )
 

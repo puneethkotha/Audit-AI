@@ -80,7 +80,7 @@ RULES = [
 
 async def seed():
     """Create tables and seed rules if empty."""
-    engine = create_async_engine(settings.database_url)
+    engine = create_async_engine(settings.async_database_url)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
