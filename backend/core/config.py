@@ -1,5 +1,7 @@
 """Application configuration via pydantic-settings."""
 
+import re
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -24,10 +26,14 @@ class Settings(BaseSettings):
         if url.startswith("postgres://"):
             url = url.replace("postgres://", "postgresql+asyncpg://", 1)
         # Strip params asyncpg doesn't support
-        url = url.replace("sslmode=require", "ssl=require")
+        if "ssl=require" not in url:
+            url = url.replace("sslmode=require", "ssl=require")
         url = url.replace("&channel_binding=require", "")
         url = url.replace("channel_binding=require&", "")
         url = url.replace("channel_binding=require", "")
+        # Strip connect_timeout (Neon may add it)
+        url = re.sub(r"[?&]connect_timeout=\d+", "", url)
+        url = url.replace("?&", "?")
         return url
 
     # LLM: Anthropic (set key) or mock mode (no key, free)

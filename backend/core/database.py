@@ -27,8 +27,11 @@ AsyncSessionLocal = async_sessionmaker(
 
 async def init_db() -> None:
     """Create all database tables."""
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    try:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+    except Exception as e:
+        print(f"Warning: DB init failed: {e}")
 
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
