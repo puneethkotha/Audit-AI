@@ -4,7 +4,7 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  base: "/Audit-AI/",
+  base: process.env.VERCEL ? "/" : "/Audit-AI/",
   server: {
     port: 3000,
     proxy: {

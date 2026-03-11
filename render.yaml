@@ -1,0 +1,11 @@
+# Render Blueprint - deploy from repo dashboard or via Render CLI
+# Set DATABASE_URL (Neon), REDIS_URL (Upstash), ANTHROPIC_API_KEY as env vars in dashboard
+
+services:
+  - type: web
+    name: auditai-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    healthCheckPath: /health

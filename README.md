@@ -23,9 +23,48 @@ docker-compose exec backend python seed_rules.py
 - **Backend API**: http://localhost:8000
 - **Metrics**: http://localhost:8000/metrics
 
-## GitHub Pages
+## Production deployment (Render, Neon, Upstash, Vercel)
 
-The frontend deploys automatically on each push to `main`. Go to **Settings > Pages** and set **Source** to **Deploy from a branch**, then choose branch **gh-pages** and folder **/ (root)**. Save. The app will be live at `https://puneethkotha.github.io/Audit-AI/`. For full audit functionality, run the backend locally or deploy it separately and set `VITE_API_URL` when building.
+Deploy the full stack to production in about 15 minutes.
+
+### 1. Neon (PostgreSQL)
+
+1. Create a project at [neon.tech](https://neon.tech)
+2. Copy the connection string from the dashboard
+3. If it uses `postgresql://`, the app will auto-convert to `postgresql+asyncpg://`
+
+### 2. Upstash (Redis)
+
+1. Create a database at [upstash.com](https://upstash.com)
+2. Copy the `rediss://` connection URL (TLS is required)
+
+### 3. Render (Backend API)
+
+1. Connect your repo at [render.com](https://render.com)
+2. Create a **Web Service** from the repo
+3. Set **Root Directory** to `backend` (or use the blueprint)
+4. Configure:
+   - **Docker**: Yes (uses `backend/Dockerfile`)
+   - **Health Check Path**: `/health`
+5. Add environment variables:
+   - `DATABASE_URL` – from Neon
+   - `REDIS_URL` – from Upstash
+   - `ANTHROPIC_API_KEY` – your Anthropic key
+6. Deploy and note the service URL (e.g. `https://auditai-api.onrender.com`)
+
+### 4. Vercel (Frontend)
+
+1. Import the repo at [vercel.com](https://vercel.com)
+2. Set **Root Directory** to `frontend`
+3. Add environment variable:
+   - `VITE_API_URL` – your Render backend URL (e.g. `https://auditai-api.onrender.com`)
+4. Deploy
+
+The frontend will call the Render backend. Rules are seeded automatically on first backend deploy.
+
+## GitHub Pages (static frontend only)
+
+The frontend also deploys to GitHub Pages on push. Go to **Settings > Pages**, set **Source** to **Deploy from a branch**, then choose branch **gh-pages** and folder **/ (root)**. Set `VITE_API_URL` in the build or use a deployed Render backend.
 
 ## Architecture
 
