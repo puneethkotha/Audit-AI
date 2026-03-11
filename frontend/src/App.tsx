@@ -78,7 +78,7 @@ export default function App() {
 
           {backendOk === false && !loading && (
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-amber-400">
-              Backend not connected. Run <code className="rounded bg-[var(--bg-elevated)] px-1.5 py-0.5">docker-compose up</code> locally for full audit capability.
+              Backend not connected. The API server may be starting up. Please wait 30 seconds and refresh.
             </div>
           )}
 
